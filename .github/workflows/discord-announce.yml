@@ -1,18 +1,17 @@
 name: Announce release on Discord
 
-# Lives in the PUBLIC repo (Sala01/ygo-fm-android). Whenever a release is
-# published there (by hand with `gh release create`, from the web UI, or by
-# the private repo's workflow), post it to Discord. It can also be run by
-# hand for any existing release: Actions -> this workflow -> Run workflow,
-# or `gh workflow run discord-announce.yml -f tag=v0.1.0-alpha.1`.
+# Lives in the PUBLIC repo (Sala01/ygo-fm-android). Posts one existing
+# release to Discord. The private repo's release workflow starts it right
+# after it publishes a release; by hand: Actions -> this workflow -> Run
+# workflow, or `gh workflow run discord-announce.yml -f tag=v0.1.0-alpha.1`.
+# (GitHub's own "release published" trigger did not start it here, so it is
+# not used: that would also announce every release twice once it did.)
 #
 # Needs one repo secret: DISCORD_WEBHOOK_URL (Discord: Channel settings ->
 # Integrations -> Webhooks -> New webhook -> Copy webhook URL). Without it the
 # job just skips.
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       tag:
