@@ -2,7 +2,9 @@ name: Announce release on Discord
 
 # Lives in the PUBLIC repo (Sala01/ygo-fm-android). Whenever a release is
 # published there (by hand with `gh release create`, from the web UI, or by
-# the private repo's workflow), post it to Discord.
+# the private repo's workflow), post it to Discord. It can also be run by
+# hand for any existing release: Actions -> this workflow -> Run workflow,
+# or `gh workflow run discord-announce.yml -f tag=v0.1.0-alpha.1`.
 #
 # Needs one repo secret: DISCORD_WEBHOOK_URL (Discord: Channel settings ->
 # Integrations -> Webhooks -> New webhook -> Copy webhook URL). Without it the
@@ -11,6 +13,11 @@ name: Announce release on Discord
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to announce (e.g. v0.1.0-alpha.1)
+        required: true
 
 permissions:
   contents: read
@@ -22,6 +29,10 @@ jobs:
       - name: Post to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          INPUT_TAG: ${{ github.event.inputs.tag }}
           TAG: ${{ github.event.release.tag_name }}
           NAME: ${{ github.event.release.name }}
           URL: ${{ github.event.release.html_url }}
@@ -31,6 +42,15 @@ jobs:
           if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then
             echo "DISCORD_WEBHOOK_URL is not set; skipping."
             exit 0
+          fi
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            # Read the release as data; nothing from it is spliced into the script.
+            json=$(gh release view "$INPUT_TAG" --json tagName,name,url,body,isPrerelease)
+            TAG=$(jq -r .tagName <<<"$json")
+            NAME=$(jq -r .name <<<"$json")
+            URL=$(jq -r .url <<<"$json")
+            BODY=$(jq -r .body <<<"$json")
+            PRERELEASE=$(jq -r .isPrerelease <<<"$json")
           fi
           kind="New Android build"
           [ "$PRERELEASE" = "true" ] && kind="New Android pre-release"
