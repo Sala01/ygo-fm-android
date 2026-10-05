@@ -1,0 +1,47 @@
+name: Announce release on Discord
+
+# Lives in the PUBLIC repo (Sala01/ygo-fm-android). Whenever a release is
+# published there (by hand with `gh release create`, from the web UI, or by
+# the private repo's workflow), post it to Discord.
+#
+# Needs one repo secret: DISCORD_WEBHOOK_URL (Discord: Channel settings ->
+# Integrations -> Webhooks -> New webhook -> Copy webhook URL). Without it the
+# job just skips.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  announce:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Post to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TAG: ${{ github.event.release.tag_name }}
+          NAME: ${{ github.event.release.name }}
+          URL: ${{ github.event.release.html_url }}
+          BODY: ${{ github.event.release.body }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then
+            echo "DISCORD_WEBHOOK_URL is not set; skipping."
+            exit 0
+          fi
+          kind="New Android build"
+          [ "$PRERELEASE" = "true" ] && kind="New Android pre-release"
+          # Values go through jq as data, never spliced into the script, so a
+          # release body cannot inject anything. Discord limits an embed
+          # description to 4096 characters.
+          payload=$(jq -n \
+            --arg title "$kind: ${NAME:-$TAG}" \
+            --arg url "$URL" \
+            --arg body "${BODY:0:1500}" \
+            '{embeds: [{title: $title, url: $url, description: $body, color: 5793266}]}')
+          curl -sS -f -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$payload"
