@@ -79,8 +79,29 @@ the harder AI are recent and the campaign has not been re-balanced for them yet,
 so tell us what feels unfair or broken. See the Releases page for a changelog
 per version.
 
-## Credits
+## Credits and license
 
-Built on top of the community's PS1 decompilation and PC recompilation
-effort for Yu-Gi-Oh! Forbidden Memories. This port adapts that work to run
-natively on Android.
+This Android port is built on the PC recompilation of Yu-Gi-Oh! Forbidden Memories
+by **Unchiga and the Yu-Gi-Oh! Forbidden Memories Re-Decomp contributors**:
+[Yu-Gi-Oh-Forbidden-Memories-Recompiled](https://github.com/Unchiga/Yu-Gi-Oh-Forbidden-Memories-Recompiled),
+released under the **MIT License** (Copyright (c) 2026 Unchiga and the
+Yu-Gi-Oh! Forbidden Memories Re-Decomp contributors). That project in turn builds
+on the matching decompilation [memories-decomp](https://github.com/krystalgamer/memories-decomp)
+by its authors. Thank you to everyone who made that work possible.
+
+This Android port, its additions (the Android app, the Pack Shop and Extra Pack,
+the modern turn rules, the card effects engine) and the PC recompilation it is
+based on are used and distributed under the terms of the MIT License:
+
+> Permission is hereby granted, free of charge, to any person obtaining a copy of
+> this software and associated documentation files, to deal in the Software
+> without restriction, including without limitation the rights to use, copy,
+> modify, merge, publish, distribute, sublicense, and/or sell copies of the
+> Software, subject to the following condition: the above copyright notice and
+> this permission notice shall be included in all copies or substantial portions
+> of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+The full license text is in the [LICENSE](LICENSE) file of this repository.
+
+Yu-Gi-Oh! and Forbidden Memories belong to Konami. This is a non-commercial fan
+project. It includes no game data: you need your own copy of the game.
